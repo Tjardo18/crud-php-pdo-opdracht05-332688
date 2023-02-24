@@ -81,10 +81,9 @@
 
             <input type="hidden" name="timeSend" id="timeSend" value="">
 
-            <!-- <div class="buttons"> -->
             <input class="button" type="submit" value="Sla op" onmouseenter="tijdValue()">
             <input class="button" type="reset" value="Reset">
-            <!-- </div> -->
+
         </form>
     </div>
 

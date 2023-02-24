@@ -75,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <body>
 
     <div class="card">
-        <h1>Basic-Fit Utrecht</h1>
+        <h1>Inschrijving Update</h1>
         <form action="update.php" method="POST">
 
             <div class="inputVeld">
