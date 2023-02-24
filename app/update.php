@@ -1,22 +1,82 @@
+<?php
+
+require('lib/console_log.php');
+require('config/config.php');
+
+$dsn = "mysql:host=$dbHost;dbname=$dbName;charset=$dbCharset";
+
+try {
+    $pdo = new PDO($dsn, $dbUser, $dbPass);
+} catch (PDOException $e) {
+    echo "<h1>Er is iets fout gegaan tijdens het verbinden met de database. Neem contact op met de Database Beheerder.</h1>";
+    console_log($e->getMessage());
+}
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    try {
+
+        $extra = $_POST['extra'];
+
+        // extra
+        $extr = "";
+        foreach ($extra as $extr1) {
+            $extr .= $extr1 . ", ";
+        }
+        $extra1 = rtrim($extr, ", ");
+
+        $sql = "UPDATE inschrijving SET 
+                                homeClub = :hc
+                                ,lidmaatschap = :ls
+                                ,looptijd = :lt
+                                ,extra = :xt
+                                ,mail = :ml
+                                ,AfspraakCreated = :ac
+                WHERE Id = :id;";
+
+        $yee = $pdo->prepare($sql);
+        $yee->bindValue(':id', $_POST['id'], PDO::PARAM_INT);
+        $yee->bindValue(':hc', $_POST['homeclub'], PDO::PARAM_STR);
+        $yee->bindValue(':ls', $_POST['lidmaatschap'], PDO::PARAM_STR);
+        $yee->bindValue(':lt', $_POST['looptijd'], PDO::PARAM_STR);
+        $yee->bindValue(':xt', $extra1, PDO::PARAM_STR);
+        $yee->bindValue(':ml', $_POST['mail'], PDO::PARAM_STR);
+        $yee->bindValue(':ac', $_POST['timeSend'], PDO::PARAM_STR);
+        $yee->execute();
+
+        echo "Het updaten is gelukt!";
+        header('Refresh:3; url=read.php');
+    } catch (PDOException $e) {
+        // error
+        echo "Het updaten is mislukt!";
+        console_log($e->getMessage());
+        header('Refresh:3; url=read.php');
+    }
+
+    exit();
+}
+
+?>
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nl">
 
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Barlow+Condensed">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <link rel="shortcut icon" href="app/img/favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="style/style.css">
-    <title>Basic Fit Utrecht</title>
-</head>
+    <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="../style/style.css">
+    <title>Update</title>
 </head>
 
 <body>
 
     <div class="card">
         <h1>Basic-Fit Utrecht</h1>
-        <form action="app/create.php" method="POST">
+        <form action="update.php" method="POST">
 
             <div class="inputVeld">
                 <label for="homeclub">
@@ -80,15 +140,16 @@
             </div>
 
             <input type="hidden" name="timeSend" id="timeSend" value="">
+            <input type="hidden" name="id" value="<?= $_GET['id'] ?>">
 
-            <!-- <div class="buttons"> -->
             <input class="button" type="submit" value="Sla op" onmouseenter="tijdValue()">
             <input class="button" type="reset" value="Reset">
-            <!-- </div> -->
+
         </form>
     </div>
 
-    <script src="js/script.js"></script>
+    <script src="../js/script.js"></script>
+
 </body>
 
 </html>
